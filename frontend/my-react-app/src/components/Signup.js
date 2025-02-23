@@ -12,7 +12,7 @@ const HomePage = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -36,10 +36,9 @@ const HomePage = () => {
 
   return (
     <div className="home-container">
-      {/* Use isScrolled in the className */}
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="logo">Digital Health Portfolio</div>
-        <button 
+        <button
           className="mobile-menu-button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -49,18 +48,16 @@ const HomePage = () => {
         </button>
         <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className="nav-link">Home</Link>
-          <Link to="/login" className="nav-link">Login</Link>
-          <Link to="/signup" className="nav-link">Signup</Link>
+          <Link to="/Login" className="nav-link">Login</Link>
+          <Link to="/Signup" className="nav-link">Signup</Link>
           <Link to="/about" className="nav-link">About</Link>
           <Link to="/contact" className="nav-link">Contact</Link>
         </div>
       </nav>
 
       <main className="main-content">
-        {/* Rest of your main content */}
-        {/* Make sure all the sections from your original code are included here */}
         <section className="welcome-section">
-        <img src="https://images.unsplash.com/photo-1580281657526-9d9a3f6f1172" alt="Health" className="welcome-image" />          <div className="welcome-text">
+          <div className="welcome-text">
             <h2>Welcome to Our Website</h2>
             <p>Discover a comprehensive platform for managing your health records with ease and security.</p>
           </div>
