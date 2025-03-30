@@ -1,0 +1,83 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4; /* Light gray background */
+}
+
+/* Login Container */
+.login-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    min-height: 100vh; /* Full height of the viewport */
+}
+
+/* Form Styles */
+.login-form {
+    background-color: white; /* White background for the form */
+    padding: 2rem; /* Padding around the form */
+    border-radius: 1rem; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    width: 100%; /* Full width */
+    max-width: 400px; /* Maximum width */
+}
+
+/* Heading Styles */
+h2 {
+    font-size: 2rem; /* Font size for the heading */
+    font-weight: bold; /* Bold font */
+    margin-bottom: 1.5rem; /* Space below heading */
+    text-align: center; /* Centered heading */
+}
+
+/* Input Field Styles */
+input {
+    width: 100%; /* Full width */
+    padding: 0.8rem; /* Padding inside the input */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 0.5rem; /* Rounded corners */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+/* Input Focus Styles */
+input:focus {
+    border-color: #007BFF; /* Blue border on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Label Styles */
+label {
+    display: block; /* Block-level element for labels */
+    margin-bottom: 0.5rem; /* Space below label */
+    font-weight: 500; /* Medium weight for labels */
+}
+
+/* Button Styles */
+button {
+    width: 100%; /* Full width */
+    padding: 0.8rem; /* Button padding */
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 0.5rem; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background */
+}
+
+/* Button Hover Styles */
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Redirect Link Styles */
+.redirect {
+    text-align: center; /* Center the redirect link */
+    margin-top: 1rem; /* Space above redirect link */
+}

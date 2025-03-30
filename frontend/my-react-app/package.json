@@ -19,5 +19,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "react-router-dom": "^7.2.0",
+    "react-scripts": "^5.0.1"
   }
 }
