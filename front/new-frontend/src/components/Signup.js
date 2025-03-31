@@ -76,6 +76,8 @@ export default function Signup() {
             onChange={handleChange}
             className="w-full p-2 border rounded-xl"
             required
+            minLength={10}
+
           />
         </div>
         <div className="mb-6">
@@ -87,11 +89,15 @@ export default function Signup() {
             onChange={handleChange}
             className="w-full p-2 border rounded-xl"
             required
+            minLength={8}
           />
         </div>
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-600">
           Sign Up
         </button>
+        <p className="redirect">
+          Do you have an account? <a href="/login">login</a>
+        </p>
       </form>
     </div>
   );

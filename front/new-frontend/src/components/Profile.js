@@ -1,8 +1,11 @@
 
 
+// import { marked } from "marked";
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
+// import './Profile.css';
+// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // const Profile = () => {
 //   const [user, setUser] = useState({});
@@ -25,55 +28,62 @@
 //   useEffect(() => {
 //     if (!userId) return;
 
-//     axios.get(`http://localhost:5000/api/auth/${userId}`)
-//       .then((res) => setUser(res.data))
-//       .catch(() => console.log("User not found"));
+//     const fetchData = async () => {
+//       try {
+//         const { data: userData } = await axios.get(`http://localhost:5000/api/auth/${userId}`);
+//         setUser(userData);
 
-//     axios.get(`http://localhost:5000/api/profile/${userId}`)
-//       .then((res) => {
-//         setProfile(res.data);
-//         setHeight(res.data.height || "");
-//         setWeight(res.data.weight || "");
-//         setAge(res.data.age || "");
-//         setBmi(res.data.bmi || "");
-//         setHealthConditions(res.data.healthConditions || []);
-//         setMedications(res.data.medications || []);
-//         setTherapies(res.data.therapies || []);
-//         setDailyActivity(res.data.dailyActivity || "");
-//         setBadHabits(res.data.badHabits || []);
-//       })
-//       .catch(() => setProfile(null));
+//         const { data: profileData } = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+//         setProfile(profileData);
+//         setHeight(profileData.height || "");
+//         setWeight(profileData.weight || "");
+//         setAge(profileData.age || "");
+//         setBmi(profileData.bmi || "");
+//         setHealthConditions(profileData.healthConditions || []);
+//         setMedications(profileData.medications || []);
+//         setTherapies(profileData.therapies || []);
+//         setDailyActivity(profileData.dailyActivity || "");
+//         setBadHabits(profileData.badHabits || []);
+//       } catch (error) {
+//         console.error("Error fetching data", error);
+//       }
+//     };
+
+//     fetchData();
 //   }, [userId]);
 
 //   const handleSaveProfile = async (e) => {
 //     e.preventDefault();
 //     const newProfile = { userId, height, weight, age, healthConditions, medications, therapies, dailyActivity, badHabits };
 
-//     await axios.post(`http://localhost:5000/api/profilepost`, newProfile)
-//       .then(() => {
-//         alert(profile ? "Profile updated!" : "Profile added!");
-//         window.location.reload();
-//       })
-//       .catch(() => alert("Error saving profile"));
+//     try {
+//       await axios.post(`http://localhost:5000/api/profilepost`, newProfile);
+//       alert(profile ? "Profile updated!" : "Profile added!");
+//       window.location.reload();
+//     } catch {
+//       alert("Error saving profile");
+//     }
 //   };
 
-//   const calculateBMI = (height, weight) => {
+//   const calculateBMI = () => {
 //     if (!height || !weight) return null;
 //     const heightInMeters = height / 100;
 //     return (weight / (heightInMeters * heightInMeters)).toFixed(2);
 //   };
 
 //   const handleGetRecommendation = async () => {
-//     const bmi = calculateBMI(height, weight);
+//     const bmiValue = calculateBMI();
 
-//     if (!bmi) {
+//     if (!bmiValue) {
 //       alert("Height and weight are required to calculate BMI.");
 //       return;
 //     }
 
 //     try {
-//       const response = await axios.post("http://localhost:5000/api/gemini/get-recommendation", {
-//         bmi: bmi, 
+//       const response = await axios.post("http://localhost:5000/api/gemini/recommend", {
+//         height,
+//         weight,
+//         age,
 //         healthConditions,
 //         medications,
 //         therapies,
@@ -81,91 +91,115 @@
 //         badHabits
 //       });
 
-//       setRecommendation(response.data); 
+//       setRecommendation(marked(response.data.recommendation));
+//       setBmi(response.bmi);
 //     } catch (error) {
 //       console.error("Error fetching AI recommendation:", error);
 //     }
 //   };
 
 //   return (
-//     <div>
-//       <nav style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#333", color: "#fff" }}>
+//     <div className="profile-container">
+//       <nav className="navbar">
 //         <h2>Health Profile</h2>
 //         <div>
-//           <button onClick={() => navigate("/dashboard")} style={{ marginRight: "10px" }}>Dashboard</button>
-//           <button onClick={() => { localStorage.removeItem("userID"); navigate("/login"); }}>Logout</button>
+//           <button className="nav-button" onClick={() => navigate("/dashboard")}>Dashboard</button>
+//           <button className="nav-button" onClick={() => { localStorage.removeItem("userID"); navigate("/login"); }}>Logout</button>
 //         </div>
 //       </nav>
 
-//       <div style={{ padding: "20px" }}>
+//       <div className="profile-content">
 //         <h3>Welcome, {user.name}</h3>
 //         {profile ? (
 //           <div>
-//             <p>Height: {profile.height} cm</p>
-//             <p>Weight: {profile.weight} kg</p>
-//             <p>BMI: {bmi || "Not calculated"}</p>
-//             <p>Age: {profile.age}</p>
-//             <p>Health Conditions: {profile.healthConditions?.join(", ") || "None"}</p>
-//             <p>Medications: {profile.medications?.join(", ") || "None"}</p>
-//             <p>Therapies: {profile.therapies?.join(", ") || "None"}</p>
-//             <p>Exercise: {profile.dailyActivity?.exercise || "Not Provided"}</p>
-//             <p>Sleep Hours: {profile.dailyActivity?.sleepHours || "Not Provided"}</p>
-//             <p>Bad Habits: {profile.badHabits?.join(", ") || "None"}</p>
-
-//             <button onClick={() => setShowForm(true)}>Update Profile</button>
-//             <button onClick={handleGetRecommendation} style={{ marginLeft: "10px" }}>Get AI Recommendation</button>
-
-//             {recommendation && (
-//               <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}>
-//                 <h4>AI Recommendation:</h4>
-//                 <p>{recommendation}</p>
+//             <div className="top">
+//               <div className="left">
+//                 <p>Height: {profile.height} cm</p>
+//                 <p>Weight: {profile.weight} kg</p>
+//                 <p>BMI: {calculateBMI() || "Not calculated"}</p>
+//                 <p>Age: {profile.age}</p>
+//                 <p>Health Conditions: {profile.healthConditions?.join(", ") || "None"}</p>
+//                 <p>Medications: {profile.medications?.join(", ") || "None"}</p>
+//                 <p>Therapies: {profile.therapies?.join(", ") || "None"}</p>
+//                 <p>Daily Activity: {profile.dailyActivity?.exercise || "Not Provided"}</p>
+//                 <p>Bad Habits: {profile.badHabits?.join(", ") || "None"}</p>
 //               </div>
-//             )}
+//               <div className="right">
+//                 {profile?.bmiRecords?.length > 0 ? (
+//                   <ResponsiveContainer width="100%" height={300}>
+//                     <LineChart data={profile.bmiRecords}>
+//                       <CartesianGrid strokeDasharray="3 3" />
+//                       <XAxis dataKey="date" />
+//                       <YAxis />
+//                       <Tooltip />
+//                       <Line type="monotone" dataKey="bmi" stroke="#8884d8" />
+//                     </LineChart>
+//                   </ResponsiveContainer>
+//                 ) : (
+//                   <p>No BMI records available</p>
+//                 )}
+//               </div>
+//             </div>
+
+//             <button className="action-button" onClick={() => setShowForm(true)}>Update Profile</button>
+//             <button className="action-button" onClick={handleGetRecommendation}>Get AI Recommendation</button>
+
 //           </div>
 //         ) : (
-//           <button onClick={() => setShowForm(true)}>Add Profile</button>
+//           <button className="action-button" onClick={() => setShowForm(true)}>Add Profile</button>
 //         )}
 //       </div>
 
-//       {showForm && (
-//         <form onSubmit={handleSaveProfile} style={{ padding: "20px", border: "1px solid #ccc", margin: "20px", maxWidth: "400px" }}>
-//           <h3>{profile ? "Update Profile" : "Add Profile"}</h3>
-//           <label>Height (cm):</label>
-//           <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} required />
-//           <label>Weight (kg):</label>
-//           <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} required />
-//           <label>Age:</label>
-//           <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
-//           <label>Health Conditions:</label>
-//           <input type="text" value={healthConditions} onChange={(e) => setHealthConditions(e.target.value)} />
-//           <label>Medications:</label>
-//           <input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
-//           <label>Therapies:</label>
-//           <input type="text" value={therapies} onChange={(e) => setTherapies(e.target.value)} />
-//           <label>Daily Activity:</label>
-//           <input type="text" value={dailyActivity} onChange={(e) => setDailyActivity(e.target.value)} />
-//           <label>Bad Habits:</label>
-//           <input type="text" value={badHabits} onChange={(e) => setBadHabits(e.target.value)} />
-//           <button type="submit">{profile ? "Update" : "Add"} Profile</button>
-//           <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
-//         </form>
-//       )}
+//       <div className="form-ai">
+//         {showForm && (
+//           <form onSubmit={handleSaveProfile} className="profile-form">
+//             <h3>{profile ? "Update Profile" : "Add Profile"}</h3>
+//             <label>Height (cm):</label>
+//             <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} required />
+//             <label>Weight (kg):</label>
+//             <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} required />
+//             <label>Age:</label>
+//             <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+//             <label>Health Conditions:</label>
+//             <input type="text" value={healthConditions} onChange={(e) => setHealthConditions(e.target.value)} />
+//             <label>Medications:</label>
+//             <input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
+//             <label>Therapies:</label>
+//             <input type="text" value={therapies} onChange={(e) => setTherapies(e.target.value)} />
+//             <label>Daily Activity:</label>
+//             <input type="text" value={dailyActivity} onChange={(e) => setDailyActivity(e.target.value)} />
+//             <label>Bad Habits:</label>
+//             <input type="text" value={badHabits} onChange={(e) => setBadHabits(e.target.value)} />
+//             <button type="submit" className="submit-button">{profile ? "Update" : "Add"} Profile</button>
+//             <button type="button" onClick={() => setShowForm(false)} className="cancel-button">Cancel</button>
+//           </form>
+//         )}
+
+//         <div class="recommandation">
+//           {bmi && <h3>BMI: {bmi}</h3>}
+//           {recommendation && (
+//             <div dangerouslySetInnerHTML={{ __html: recommendation.replace(/\n/g, "<br/>") }} />
+//           )}
+//         </div>
+//       </div>
 //     </div>
 //   );
 // };
 
 // export default Profile;
 
+
+import { marked } from "marked";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import './Profile.css';  // Ensure to create and import the CSS for styling
+import './Profile.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const Profile = () => {
   const [user, setUser] = useState({});
   const [profile, setProfile] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [age, setAge] = useState("");
@@ -185,20 +219,20 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const userResponse = await axios.get(`http://localhost:5000/api/auth/${userId}`);
-        setUser(userResponse.data);
+        const { data: userData } = await axios.get(`http://localhost:5000/api/auth/${userId}`);
+        setUser(userData);
 
-        const profileResponse = await axios.get(`http://localhost:5000/api/profile/${userId}`);
-        setProfile(profileResponse.data);
-        setHeight(profileResponse.data.height || "");
-        setWeight(profileResponse.data.weight || "");
-        setAge(profileResponse.data.age || "");
-        setBmi(profileResponse.data.bmi || "");
-        setHealthConditions(profileResponse.data.healthConditions || []);
-        setMedications(profileResponse.data.medications || []);
-        setTherapies(profileResponse.data.therapies || []);
-        setDailyActivity(profileResponse.data.dailyActivity || "");
-        setBadHabits(profileResponse.data.badHabits || []);
+        const { data: profileData } = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+        setProfile(profileData);
+        setHeight(profileData.height || "");
+        setWeight(profileData.weight || "");
+        setAge(profileData.age || "");
+        setBmi(profileData.bmi || "");
+        setHealthConditions(profileData.healthConditions || []);
+        setMedications(profileData.medications || []);
+        setTherapies(profileData.therapies || []);
+        setDailyActivity(profileData.dailyActivity || "");
+        setBadHabits(profileData.badHabits || []);
       } catch (error) {
         console.error("Error fetching data", error);
       }
@@ -227,9 +261,9 @@ const Profile = () => {
   };
 
   const handleGetRecommendation = async () => {
-    const bmi = calculateBMI();
+    const bmiValue = calculateBMI();
 
-    if (!bmi) {
+    if (!bmiValue) {
       alert("Height and weight are required to calculate BMI.");
       return;
     }
@@ -245,14 +279,12 @@ const Profile = () => {
         dailyActivity,
         badHabits
       });
-    
-      setRecommendation(response.data.recommendation); 
-      setBmi(response.data.bmi);  
+
+      setRecommendation(marked(response.data.recommendation));
+      setBmi(response.bmi);
     } catch (error) {
       console.error("Error fetching AI recommendation:", error);
     }
-     
-    
   };
 
   return (
@@ -264,85 +296,87 @@ const Profile = () => {
           <button className="nav-button" onClick={() => { localStorage.removeItem("userID"); navigate("/login"); }}>Logout</button>
         </div>
       </nav>
- 
+
       <div className="profile-content">
         <h3>Welcome, {user.name}</h3>
         {profile ? (
-          <div>
+          <div className="profile-overview">
             <div className="top">
-              <div className="left">
-                <p>Height: {profile.height} cm</p>
-                <p>Weight: {profile.weight} kg</p>
-                <p>BMI: {calculateBMI() || "Not calculated"}</p>
-                <p>Age: {profile.age}</p>
-                <p>Health Conditions: {profile.healthConditions?.join(", ") || "None"}</p>
-                <p>Medications: {profile.medications?.join(", ") || "None"}</p>
-                <p>Therapies: {profile.therapies?.join(", ") || "None"}</p>
-                <p>Daily Activity: {profile.dailyActivity?.exercise || "Not Provided"}</p>
-                <p>Bad Habits: {profile.badHabits?.join(", ") || "None"}</p>
-              </div>
+            <div className="left">
+    <p><strong>Height:</strong> {profile.height} cm</p>
+    <p><strong>Weight:</strong> {profile.weight} kg</p>
+    <p><strong>BMI:</strong> {calculateBMI() || "Not calculated"}</p>
+    <p><strong>Age:</strong> {profile.age}</p>
+    <p><strong>Health Conditions:</strong> {profile.healthConditions?.join(", ") || "None"}</p>
+    <p><strong>Medications:</strong> {profile.medications?.join(", ") || "None"}</p>
+    <p><strong>Therapies:</strong> {profile.therapies?.join(", ") || "None"}</p>
+    <p><strong>Daily Activity:</strong> {profile.dailyActivity?.exercise || "Not Provided"}</p>
+    <p><strong>Bad Habits:</strong> {profile.badHabits?.join(", ") || "None"}</p>
+</div>
               <div className="right">
-              {profile?.bmiRecords?.length > 0 ? (
-  <ResponsiveContainer width="100%" height={300}>
-    <LineChart data={profile.bmiRecords}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="date" />
-      <YAxis />
-      <Tooltip />
-      <Line type="monotone" dataKey="bmi" stroke="#8884d8" />
-    </LineChart>
-  </ResponsiveContainer>
-) : (
-  <p>No BMI records available</p>
-)}
+                {profile?.bmiRecords?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={profile.bmiRecords}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="bmi" stroke="#8884d8" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p>No BMI records available</p>
+                )}
               </div>
             </div>
 
-            <button className="action-button" onClick={() => setShowForm(true)}>Update Profile</button>
-            <button className="action-button" onClick={handleGetRecommendation}>Get AI Recommendation</button>
-
+            <div className="button-container">
+              <button className="action-button" onClick={() => setShowModal(true)}>Update Profile</button>
+              <button className="action-button" onClick={handleGetRecommendation}>Get AI Recommendation</button>
+            </div>
           </div>
         ) : (
-          <button className="action-button" onClick={() => setShowForm(true)}>Add Profile</button>
+          <button className="action-button" onClick={() => setShowModal(true)}>Add Profile</button>
         )}
+        
+        {recommendation && (
+          <div className="recommandation">
+            {bmi && <h3>BMI: {bmi}</h3>}
+            <div dangerouslySetInnerHTML={{ __html: recommendation.replace(/\n/g, "<br/>") }} />
+          </div>
+        )}
+
       </div>
-      <div className="form-ai">
-      {showForm && (
-        <form onSubmit={handleSaveProfile} className="profile-form">
-          <h3>{profile ? "Update Profile" : "Add Profile"}</h3>
-          <label>Height (cm):</label>
-          <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} required />
-          <label>Weight (kg):</label>
-          <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} required />
-          <label>Age:</label>
-          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
-          <label>Health Conditions:</label>
-          <input type="text" value={healthConditions} onChange={(e) => setHealthConditions(e.target.value)} />
-          <label>Medications:</label>
-          <input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
-          <label>Therapies:</label>
-          <input type="text" value={therapies} onChange={(e) => setTherapies(e.target.value)} />
-          <label>Daily Activity:</label>
-          <input type="text" value={dailyActivity} onChange={(e) => setDailyActivity(e.target.value)} />
-          <label>Bad Habits:</label>
-          <input type="text" value={badHabits} onChange={(e) => setBadHabits(e.target.value)} />
-          <button type="submit" className="submit-button">{profile ? "Update" : "Add"} Profile</button>
-          <button type="button" onClick={() => setShowForm(false)} className="cancel-button">Cancel</button>
-        </form>
+
+      {/* Modal for updating/adding profile */}
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+            <form onSubmit={handleSaveProfile} className="profile-form">
+              <h3>{profile ? "Update Profile" : "Add Profile"}</h3>
+              <label>Height (cm):</label>
+              <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} required />
+              <label>Weight (kg):</label>
+              <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} required />
+              <label>Age:</label>
+              <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+              <label>Health Conditions:</label>
+              <input type="text" value={healthConditions} onChange={(e) => setHealthConditions(e.target.value)} />
+              <label>Medications:</label>
+              <input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
+              <label>Therapies:</label>
+              <input type="text" value={therapies} onChange={(e) => setTherapies(e.target.value)} />
+              <label>Daily Activity:</label>
+              <input type="text" value={dailyActivity} onChange={(e) => setDailyActivity(e.target.value)} />
+              <label>Bad Habits:</label>
+              <input type="text" value={badHabits} onChange={(e) => setBadHabits(e.target.value)} />
+              <button type="submit" className="submit-button">{profile ? "Update" : "Add"} Profile</button>
+              <button type="button" onClick={() => setShowModal(false)} className="cancel-button">Cancel</button>
+            </form>
+          </div>
+        </div>
       )}
-{/* {recommendation && (
-  <div>
-    <h3>BMI: {recommendation.bmi}</h3>
-    <p>{recommendation.recommendation}</p>
-  </div>
-)} */}
-<div>
-  {bmi && <h3>BMI: {bmi}</h3>}
-  {recommendation && <p>{recommendation}</p>}
-</div>
-
-
-      </div>
     </div>
   );
 };
