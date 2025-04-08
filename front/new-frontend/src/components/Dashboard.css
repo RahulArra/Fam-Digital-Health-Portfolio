@@ -1,0 +1,127 @@
+/* Dashboard.css */
+
+.dashboard-container {
+  padding: 2rem 4vw;
+  max-width: 1200px;
+  margin: auto;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.dashboard-heading {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.upload-button {
+  display: block;
+  margin: 0 auto 2rem auto;
+  padding: 0.8rem 1.8rem;
+  font-size: 1.05rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.no-records {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.records-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.record-card {
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.record-card:hover {
+  transform: translateY(-5px);
+}
+
+.record-card h3 {
+  margin-top: 0;
+  color: #0056b3;
+}
+
+.record-card p {
+  margin: 0.4rem 0;
+  line-height: 1.4;
+}
+
+.image-toggle,
+.edit-button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.image-toggle {
+  background-color: #28a745;
+  color: white;
+  margin-right: 0.8rem;
+}
+
+.image-toggle:hover {
+  background-color: #1e7e34;
+}
+
+.edit-button {
+  background-color: #ffc107;
+  color: black;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
+}
+
+.prescription-image {
+  margin-top: 1rem;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-heading {
+    font-size: 1.8rem;
+  }
+
+  .upload-button {
+    width: 100%;
+  }
+
+  .record-card {
+    padding: 1rem;
+  }
+
+  .image-toggle,
+  .edit-button {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+}

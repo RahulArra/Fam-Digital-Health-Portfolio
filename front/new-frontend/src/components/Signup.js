@@ -7,6 +7,7 @@ export default function Signup() {
     name: '',
     email: '',
     password: '',
+    confirmPassword:'',
     Phone: ''  // ✅ Added Phone field
   });
   const navigate = useNavigate();  // Initialize navigation
@@ -21,11 +22,16 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    const { confirmPassword, ...dataToSend } = formData; // Remove confirmPassword before sending
     try {
         const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(dataToSend)
       });
 
       const data = await response.json();
@@ -91,6 +97,10 @@ export default function Signup() {
             required
             minLength={8}
           />
+        </div>
+        <div className="mb-6">
+          <label className="block mb-2">Re-enter Password</label>
+          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full p-2 border rounded-xl" required minLength={8} />
         </div>
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-600">
           Sign Up

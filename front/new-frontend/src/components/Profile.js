@@ -246,10 +246,17 @@ const Profile = () => {
     const newProfile = { userId, height, weight, age, healthConditions, medications, therapies, dailyActivity, badHabits };
 
     try {
-      await axios.post(`http://localhost:5000/api/profilepost`, newProfile);
-      alert(profile ? "Profile updated!" : "Profile added!");
+      if (profile) {
+        // If profile exists, update it
+        await axios.post(`http://localhost:5000/api/profile/${userId}`, newProfile);
+        alert("Profile updated!");
+      } else {
+        // If no profile exists, create a new one
+        await axios.post("http://localhost:5000/api/profile", newProfile);
+        alert("Profile added!");
+      }
       window.location.reload();
-    } catch {
+    } catch (error) {
       alert("Error saving profile");
     }
   };
@@ -289,7 +296,7 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      <nav className="navbar">
+      <nav className="navbar1">
         <h2>Health Profile</h2>
         <div>
           <button className="nav-button" onClick={() => navigate("/dashboard")}>Dashboard</button>
@@ -341,6 +348,7 @@ const Profile = () => {
         
         {recommendation && (
           <div className="recommandation">
+            <h2>AI Recommandation</h2>
             {bmi && <h3>BMI: {bmi}</h3>}
             <div dangerouslySetInnerHTML={{ __html: recommendation.replace(/\n/g, "<br/>") }} />
           </div>

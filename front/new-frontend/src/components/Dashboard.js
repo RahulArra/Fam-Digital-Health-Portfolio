@@ -1,91 +1,82 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styled from "styled-components";
-
-const Container = styled.div`
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
-`;
-
-const Card = styled.div`
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 10px;
-  flex: 1;
-  margin: 5px;
-  min-width: 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const StatsContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-  flex-wrap: wrap;
-`;
-
-const RecentVisits = styled.div`
-  text-align: left;
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 10px;
-  margin-top: 20px;
-`;
+import "./Dashboard.css";
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const [records, setRecords] = useState([]);
+  const [showImages, setShowImages] = useState({});
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/user/65e987abcdef123456789012") // Use real ObjectId
-      .then((response) => setUser(response.data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const storedUserId = localStorage.getItem("userID");
+    if (!storedUserId) {
+      alert("User not logged in!");
+      window.location.href = "/login";
+      return;
+    }
+    fetchRecords(storedUserId);
   }, []);
 
-  if (!user) return <h2>Loading...</h2>;
+  const fetchRecords = async (userId) => {
+    try {
+      const res = await axios.get(`http://localhost:5000/hospital/records/${userId}`);
+      if (Array.isArray(res.data.data)) {
+        setRecords(res.data.data);
+      } else {
+        setRecords([]);
+      }
+    } catch (error) {
+      console.error("Error fetching records:", error);
+      setRecords([]);
+    }
+  };
 
-  const bmi = (user.weight / ((user.height / 100) * (user.height / 100))).toFixed(1);
+  const toggleImage = (recordId) => {
+    setShowImages((prev) => ({
+      ...prev,
+      [recordId]: !prev[recordId],
+    }));
+  };
 
   return (
-    <Container>
-      <h2>Welcome, {user.name} 👋</h2>
+    <div className="dashboard-container">
+      <h1 className="dashboard-heading">Hospital Records</h1>
+      <button className="upload-button" onClick={() => (window.location.href = "/upload")}>
+        Upload New Record
+      </button>
 
-      <StatsContainer>
-        <Card>
-          <p>Height</p>
-          <p>{user.height} cm</p>
-        </Card>
-        <Card>
-          <p>Weight</p>
-          <p>{user.weight} kg</p>
-        </Card>
-        <Card>
-          <p>Age</p>
-          <p>{user.age} years</p>
-        </Card>
-        <Card>
-          <p>BMI</p>
-          <p>{bmi}</p>
-        </Card>
-      </StatsContainer>
+      {records.length === 0 ? (
+        <p className="no-records">No records found.</p>
+      ) : (
+        <div className="records-container">
+          {records.map((record) => (
+            <div key={record._id} className="record-card">
+              <h3>{record.hospitalName}</h3>
+              <p><strong>Doctor:</strong> {record.doctorName}</p>
+              <p><strong>Diagnosis:</strong> {record.diagnosis}</p>
+              <p><strong>Medications:</strong> {record.medications}</p>
+              <p><strong>Tests:</strong> {record.tests}</p>
+              <p><strong>Next Appointment:</strong> {record.nextAppointment}</p>
 
-      <h3 style={{ marginTop: "20px" }}>Recent Hospital Visits</h3>
-      <RecentVisits>
-        {user.visits.length > 0 ? (
-          user.visits.map((visit, index) => (
-            <p key={index}>
-              {visit.date} - {visit.doctor} at {visit.hospital}
-            </p>
-          ))
-        ) : (
-          <p>No visits recorded.</p>
-        )}
-      </RecentVisits>
-    </Container>
+              <button className="image-toggle" onClick={() => toggleImage(record._id)}>
+                {showImages[record._id] ? "Hide Prescription" : "Show Prescription"}
+              </button>
+              {showImages[record._id] && (
+                <img
+                  src={record.prescription}
+                  alt="Prescription"
+                  className="prescription-image"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+              )}
+
+              <button className="edit-button" onClick={() => (window.location.href = `/edit/${record._id}`)}>
+                Edit Record
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

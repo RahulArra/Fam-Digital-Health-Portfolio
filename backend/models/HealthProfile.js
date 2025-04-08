@@ -4,7 +4,14 @@ const HealthProfileSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   height: Number,
   weight: Number,
-  bmi: Number,
+  // bmi: Number,
+  bmiRecords: [
+    {
+      date: { type: Date, default: Date.now }, 
+      bmi: Number
+    }
+  ],
+  
   age: Number,
   healthConditions: [String],  
   medications: [String],       

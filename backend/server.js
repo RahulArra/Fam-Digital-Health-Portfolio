@@ -3,12 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
-const HealthProfile = require('./models/HealthProfile'); // Use the correct model
-require('dotenv').config();
+// const HealthProfile = require('./models/HealthProfile'); // Use the correct model
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const profileRoutes = require("./routes/profile");
+const hospitalRoutes = require("./routes/hospitalRoutes");
 
 if (!MONGO_URI) {
   console.error('Error: MONGODB_URI is not defined. Check your .env file.');
@@ -35,6 +35,7 @@ const geminiRoutes = require('./routes/geminiRoutes');
 app.use('/api/gemini', geminiRoutes);
 app.use("/api/profilepost",profileRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/hospital", hospitalRoutes);
 
 // app.use("/api/user", profileRoutes);
 
