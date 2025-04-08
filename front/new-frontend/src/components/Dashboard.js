@@ -25,7 +25,7 @@ const Dashboard = () => {
         setRecords([]);
       }
     } catch (error) {
-      console.error("Error fetching records:", error);
+      console.error("Error fetching the  records:", error);
       setRecords([]);
     }
   };
