@@ -10,8 +10,9 @@ export default function Signup() {
     confirmPassword:'',
     Phone: ''  // ✅ Added Phone field
   });
+  
+  const [message, setMessage] = useState('');  // To store success/error message
   const navigate = useNavigate();  // Initialize navigation
-
 
   const handleChange = (e) => {
     setFormData({
@@ -36,14 +37,15 @@ export default function Signup() {
 
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('userId', data.userID);
-        alert('Signup successful!');
-        navigate('/login'); // Redirect to login page
+        setMessage('Signup successful! Please check your email to verify your account.');
+        setTimeout(() => {
+          navigate('/login'); // Redirect to login page after 3 seconds
+        }, 3000);
       } else {
-        alert(data.error || 'Signup failed');
+        setMessage(data.error || 'Signup failed');
       }
     } catch (error) {
-      alert('Error connecting to server');
+      setMessage('Error connecting to server');
     }
   };
 
@@ -51,6 +53,8 @@ export default function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+        {message && <p className="text-center text-green-500">{message}</p>} {/* Display success or error message */}
+        
         <div className="mb-4">
           <label className="block mb-2">Name</label>
           <input
@@ -83,7 +87,6 @@ export default function Signup() {
             className="w-full p-2 border rounded-xl"
             required
             minLength={10}
-
           />
         </div>
         <div className="mb-6">

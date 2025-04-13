@@ -4,39 +4,30 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const HealthProfile = require('../models/HealthProfile');
 const authenticate = require('../middleware/authenticate'); // Adjust path if needed
+const sendVerificationMail = require('./sendVerificationMail');
 
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    // console.log("Login Request for:", email);
-
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("User not found");
       return res.status(404).json({ error: "User not found" });
     }
-    // console.log("JWT Secret:", process.env.JWT_SECRET);
-    // console.log("User Found:", user);
+
+    if (!user.verified) {
+      return res.status(403).json({ error: "Please verify your email before logging in" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Invalid password");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // console.log("Password matched successfully");
-
-    // Debugging health profile retrieval
     const healthProfile = await HealthProfile.findOne({ userID: user._id });
-    // console.log("Health Profile Found:", healthProfile);
 
-    // Debugging JWT token generation
-    console.log("Generating JWT Token");
     const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    // console.log("Login Successful. Sending response...");
 
     res.json({
       userID: user._id,
@@ -46,9 +37,10 @@ router.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ error: "Serverr error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 // Fetch user details
 router.get('/:userId', async (req, res) => {
@@ -80,13 +72,16 @@ router.post('/register', async (req, res) => {
       name, 
       email: email.toLowerCase(), 
       password: hashedPassword, 
-      Phone
+      Phone,
+      verified: false
     });
 
     await user.save();
 
+    await sendVerificationMail(user); // Sends email with verification token
+
     res.status(201).json({ 
-      message: "User registered successfully",
+      message: "User registered successfully. Please verify your email.",
       userID: user._id, 
       name, 
       email,
@@ -94,13 +89,30 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Registration Error:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+router.get('/verify/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
 
+    if (!user) return res.status(404).send('User not found');
 
+    if (user.verified) return res.send('Email already verified');
 
+    user.verified = true;
+    console.log(user);
+    await user.save();
+
+    res.send('Email verified successfully! You can now login.');
+  } catch (err) {
+    res.status(400).send('Invalid or expired token');
+  }
+});
 
 
 

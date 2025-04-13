@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema({
   Phone:{
     type : Number,
     required : true ,
-  }
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  }  
 });
 const User = mongoose.model('User', userSchema); // Mongoose maps to 'users' collection
 module.exports = User;

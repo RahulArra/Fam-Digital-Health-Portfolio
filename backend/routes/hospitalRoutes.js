@@ -5,12 +5,12 @@ const HospitalRecord = require("../models/HospitalRecord");
 
 const router = express.Router();
 
-// Check Cloudinary Config
-console.log("Cloudinary Config:", {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// // Check Cloudinary Config
+// console.log("Cloudinary Config:", {
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
 
 // Cloudinary Configuration
 cloudinary.config({
@@ -44,8 +44,8 @@ router.post("/upload", upload.single("prescription"), async (req, res) => {
   console.log("hello");
 
   try {
-    console.log("Received Data:", req.body);
-    console.log("Received File:", req.file ? req.file.originalname : "No file received");
+    // console.log("Received Data:", req.body);
+    // console.log("Received File:", req.file ? req.file.originalname : "No file received");
 
     if (!req.file) {
       return res.status(400).json({ error: "Image file is required!" });

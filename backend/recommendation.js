@@ -7,7 +7,6 @@ const mongoose = require("mongoose");
 
 router.post("/get-recommendation", async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Debugging
 
     const { bmi, userId } = req.body;
     if (!bmi) {
