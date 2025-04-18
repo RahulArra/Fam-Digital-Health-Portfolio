@@ -1,0 +1,32 @@
+.welcome-section {
+    padding: 5rem 0;
+    background-color: #fff;
+  }
+  
+  .welcome-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .welcome-text {
+    margin-top: 2rem;
+    text-align: left;
+  }
+  
+  .welcome-text p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #4b5563;
+  }
+  
+  @media (max-width: 768px) {
+    .welcome-section {
+      padding: 3rem 0;
+    }
+    
+    .welcome-text {
+      padding: 0 1rem;
+    }
+  }

@@ -13,3 +13,4 @@ const HospitalRecordSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("HospitalRecord", HospitalRecordSchema);
+  

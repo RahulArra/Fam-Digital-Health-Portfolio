@@ -1,0 +1,107 @@
+.footer {
+    background-color: #111827;
+    color: #fff;
+    padding: 4rem 0 2rem;
+  }
+  
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+  
+  .footer-brand {
+    max-width: 300px;
+  }
+  
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .heart-icon {
+    color: #ef4444;
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+  }
+  
+  .brand-description {
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+  
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+  }
+  
+  .links-column h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: #fff;
+  }
+  
+  .links-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .links-column li {
+    margin-bottom: 0.75rem;
+  }
+  
+  .links-column a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .links-column a:hover {
+    color: #fff;
+  }
+  
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: 1px solid #374151;
+  }
+  
+  .copyright {
+    color: #9ca3af;
+    margin-bottom: 1rem;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .social-links a {
+    color: #9ca3af;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+  }
+  
+  .social-links a:hover {
+    color: #fff;
+  }
+  
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+    }
+    
+    .copyright {
+      margin-bottom: 0;
+    }
+  }

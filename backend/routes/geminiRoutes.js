@@ -4,7 +4,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 router.post('/recommend', async (req, res) => {
     try {
       const { age, weight, height, healthConditions, medications, therapies, dailyActivity, badHabits } = req.body;
@@ -12,11 +11,9 @@ router.post('/recommend', async (req, res) => {
       if (!age || !weight || !height) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-  
       const bmi = weight / ((height / 100) * (height / 100)); // Calculate BMI dynamically
-  
       const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-  
+
       const prompt = `Provide a structured health recommendation based on:
   - Age: ${age}
   - Weight: ${weight} kg
@@ -44,6 +41,4 @@ router.post('/recommend', async (req, res) => {
       res.status(500).json({ error: 'Failed to generate recommendation' });
     }
   });
-  
-
 module.exports = router;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./UploadRecord.css";
 
 const UploadRecord = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const UploadRecord = () => {
     nextAppointment: "",
     prescription: null
   });
+  const [fileName, setFileName] = useState("");
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userID");
@@ -29,12 +31,15 @@ const UploadRecord = () => {
   };
 
   const handleDateChange = (e) => {
-    const dateString = new Date(e.target.value).toISOString().split("T")[0]; // Convert to "YYYY-MM-DD"
+    const dateString = new Date(e.target.value).toISOString().split("T")[0];
     setFormData({ ...formData, [e.target.name]: dateString });
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, prescription: e.target.files[0] });
+    if (e.target.files[0]) {
+      setFormData({ ...formData, prescription: e.target.files[0] });
+      setFileName(e.target.files[0].name);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -50,28 +55,112 @@ const UploadRecord = () => {
       window.location.href = "/Dashboard";
     } catch (error) {
       console.error("Error uploading record:", error);
+      alert("Error uploading record. Please try again.");
     }
   };
 
   return (
-    <div>
-      <h1>Upload New Hospital Record</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="hospitalName" placeholder="Hospital Name" onChange={handleChange} required />
-        
-        <label>Visit Date:</label>
-        <input type="date" name="visitDate" onChange={handleDateChange} required />
+    <div className="upload-container">
+      <h1 className="upload-heading">Upload New Hospital Record</h1>
+      <form className="upload-form" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <input
+            className="form-input"
+            type="text"
+            name="hospitalName"
+            placeholder="Hospital Name"
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        <input type="text" name="doctorName" placeholder="Doctor Name" onChange={handleChange} required />
-        <input type="text" name="diagnosis" placeholder="Diagnosis" onChange={handleChange} required />
-        <input type="text" name="medications" placeholder="Medications" onChange={handleChange} required />
-        <input type="text" name="tests" placeholder="Tests" onChange={handleChange} required />
+        <div className="form-group">
+          <label>Visit Date:</label>
+          <input
+            className="date-input"
+            type="date"
+            name="visitDate"
+            onChange={handleDateChange}
+            required
+          />
+        </div>
 
-        <label>Next Appointment:</label>
-        <input type="date" name="nextAppointment" onChange={handleDateChange} required />
+        <div className="form-group">
+          <input
+            className="form-input"
+            type="text"
+            name="doctorName"
+            placeholder="Doctor Name"
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        <input type="file" name="prescription" onChange={handleFileChange} required />
-        <button type="submit">Upload Record</button>
+        <div className="form-group">
+          <input
+            className="form-input"
+            type="text"
+            name="diagnosis"
+            placeholder="Diagnosis"
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <input
+            className="form-input"
+            type="text"
+            name="medications"
+            placeholder="Medications"
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <input
+            className="form-input"
+            type="text"
+            name="tests"
+            placeholder="Tests"
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Next Appointment:</label>
+          <input
+            className="date-input"
+            type="date"
+            name="nextAppointment"
+            onChange={handleDateChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Prescription:</label>
+          <div className="file-input-container">
+            <label className="file-input-label">
+              <span>Click to upload prescription</span>
+              <span className="file-input-text">or drag and drop</span>
+              {fileName && <span className="file-name">{fileName}</span>}
+              <input
+                className="file-input"
+                type="file"
+                name="prescription"
+                onChange={handleFileChange}
+                required
+              />
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" className="submit-button">
+          Upload Record
+        </button>
       </form>
     </div>
   );
