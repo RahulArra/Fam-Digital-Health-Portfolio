@@ -20,7 +20,6 @@ const EditRecord = () => {
   const fetchRecord = async () => {
     try {
         const res = await axios.get(`http://localhost:5000/hospital/records/id/${id}`); // Updated URL
-        // console.log("API Response:", res.data); // Debugging: Check API response structure
       
       if (res.data && res.data.data) {
         const record = res.data.data;

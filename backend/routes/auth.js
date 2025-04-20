@@ -59,9 +59,11 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-
 router.post('/register', async (req, res) => {
-  const { name, email, password, Phone } = req.body;
+  const { name, email, password, Phone, role } = req.body;
+
+  // Default the role to 'user' if no role is provided
+  const userRole = role || 'user';
 
   try {
     let user = await User.findOne({ email: email.toLowerCase() });
@@ -73,6 +75,7 @@ router.post('/register', async (req, res) => {
       email: email.toLowerCase(), 
       password: hashedPassword, 
       Phone,
+      role: userRole,  // Save the role (either 'user' or 'doctor')
       verified: false
     });
 
@@ -85,7 +88,8 @@ router.post('/register', async (req, res) => {
       userID: user._id, 
       name, 
       email,
-      Phone
+      Phone,
+      role: userRole // Return the role in the response
     });
 
   } catch (error) {
@@ -113,8 +117,5 @@ router.get('/verify/:token', async (req, res) => {
     res.status(400).send('Invalid or expired token');
   }
 });
-
-
-
 
 module.exports = router;

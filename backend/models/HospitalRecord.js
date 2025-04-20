@@ -1,3 +1,5 @@
+
+
 const mongoose = require("mongoose");
 
 const HospitalRecordSchema = new mongoose.Schema({
@@ -5,7 +7,8 @@ const HospitalRecordSchema = new mongoose.Schema({
   hospitalName: String,
   visitDate: String,
   doctorName: String,
-  prescription: String, // Cloudinary Image URL
+  prescription: [String],           // Array of Cloudinary Image URLs
+  prescriptionPublicId: [String],   // Array of Cloudinary public_ids
   diagnosis: String,
   medications: String,
   tests: String,
@@ -13,4 +16,3 @@ const HospitalRecordSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("HospitalRecord", HospitalRecordSchema);
-  

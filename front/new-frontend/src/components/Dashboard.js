@@ -6,11 +6,11 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const [records, setRecords] = useState([]);
-  const [showImages, setShowImages] = useState({});
+  const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
-
+  const [showImages, setShowImages] = useState({});
   useEffect(() => {
     const storedUserId = localStorage.getItem("userID");
     const storedUserName = localStorage.getItem("userName");
@@ -35,7 +35,6 @@ const Dashboard = () => {
       if (Array.isArray(res.data.data)) {
         setRecords(res.data.data);
         console.log("Fetched records:", res.data.data);
-
       } else {
         setRecords([]);
       }
@@ -50,14 +49,49 @@ const Dashboard = () => {
   const toggleImage = (recordId) => {
     setShowImages((prev) => ({
       ...prev,
-      [recordId]: !prev[recordId],
+      [recordId]: !prev[recordId],  // Toggle the visibility on each click
     }));
-  };
+  // Reset image index to 0 when toggling the images
+  setCurrentImageIndex((prev) => ({
+    ...prev,
+    [recordId]: 0,
+  }));
+};
+
+const handleImageNavigation = (recordId, direction) => {
+  setCurrentImageIndex((prev) => {
+    const currentIndex = prev[recordId] || 0;
+    const imagesCount = records.find((record) => record._id === recordId)?.prescription.length || 0;
+    let newIndex = currentIndex + direction;
+    
+    // Ensure the index stays within bounds
+    if (newIndex < 0) newIndex = imagesCount - 1;
+    if (newIndex >= imagesCount) newIndex = 0;
+
+    return { ...prev, [recordId]: newIndex };
+  });
+};
 
   const handleLogout = () => {
     localStorage.removeItem("userID");
     localStorage.removeItem("userName");
     navigate("/login");
+  };
+
+  const handleDelete = async (recordId, cloudinaryUrl) => {
+    if (!window.confirm("Are you sure you want to delete this record?")) return;
+  
+    try {
+      await axios.delete(`http://localhost:5000/hospital/${recordId}`, {
+        data: { imageUrl: cloudinaryUrl }
+      });
+  
+      setRecords((prev) => prev.filter((r) => r._id !== recordId));
+      alert("Record deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting record:", error);
+      alert("Failed to delete the record.");
+    }
   };
 
   return (
@@ -118,12 +152,16 @@ const Dashboard = () => {
                     {record.hospitalName}
                   </h3>
                   <span className="record-date">
-                  {new Date(record.visitDate + 'T00:00:00Z').toLocaleDateString()}
-
-</span>
-
+                    {new Date(record.visitDate + 'T00:00:00Z').toLocaleDateString()}
+                  </span>
                 </div>
-                
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(record._id, record.prescription)}
+                >
+                  🗑️
+                </button>
+
                 <div className="card-body">
                   <div className="record-field">
                     <FaUserMd className="field-icon" />
@@ -161,9 +199,8 @@ const Dashboard = () => {
                     className="image-toggle" 
                     onClick={() => toggleImage(record._id)}
                   >
-                    {showImages[record._id] ? "Hide Prescription" : "View Prescription"}
+                    {record.prescription.length > 1 ? "View Prescriptions" : "View Prescription"}
                   </button>
-                  
                   <button 
                     className="edit-button" 
                     onClick={() => navigate(`/edit/${record._id}`)}
@@ -173,10 +210,16 @@ const Dashboard = () => {
                   </button>
                 </div>
 
-                {showImages[record._id] && (
+                {showImages[record._id] && record.prescription.length > 1 && (
                   <div className="prescription-container">
+                    <button 
+                      className="image-nav left" 
+                      onClick={() => handleImageNavigation(record._id, -1)}
+                    >
+                      ◀
+                    </button>
                     <img
-                      src={record.prescription}
+                      src={record.prescription[currentImageIndex[record._id] || 0]}
                       alt="Prescription"
                       className="prescription-image"
                       onError={(e) => {
@@ -187,6 +230,21 @@ const Dashboard = () => {
                     <p className="image-error" style={{ display: "none" }}>
                       Prescription image not available
                     </p>
+                    <button 
+                      className="image-nav right" 
+                      onClick={() => handleImageNavigation(record._id, 1)}
+                    >
+                      ▶
+                    </button>
+                  </div>
+                )}
+                {showImages[record._id] && record.prescription.length === 1 && (
+                  <div className="prescription-container">
+                    <img
+                      src={record.prescription[0]}
+                      alt="Prescription"
+                      className="prescription-image"
+                    />
                   </div>
                 )}
               </div>

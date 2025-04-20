@@ -12,7 +12,7 @@ const UploadRecord = () => {
     medications: "",
     tests: "",
     nextAppointment: "",
-    prescription: null
+    prescriptions: []
   });
   const [fileName, setFileName] = useState("");
 
@@ -36,18 +36,23 @@ const UploadRecord = () => {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setFormData({ ...formData, prescription: e.target.files[0] });
-      setFileName(e.target.files[0].name);
-    }
+    const files = Array.from(e.target.files);
+    setFormData((prev) => ({ ...prev, prescriptions: files }));
+    setFileName(files.map((f) => f.name).join(", "));
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "prescriptions") {
+        value.forEach((file) => data.append("prescriptions", file));
+      } else {
+        data.append(key, value);
+      }
     });
+    
 
     try {
       await axios.post("http://localhost:5000/hospital/upload", data);
@@ -147,13 +152,15 @@ const UploadRecord = () => {
               <span>Click to upload prescription</span>
               <span className="file-input-text">or drag and drop</span>
               {fileName && <span className="file-name">{fileName}</span>}
-              <input
-                className="file-input"
-                type="file"
-                name="prescription"
-                onChange={handleFileChange}
-                required
-              />
+          <input
+            className="file-input"
+            type="file"
+            name="prescriptions"
+            onChange={handleFileChange}
+            multiple
+            required
+          />
+
             </label>
           </div>
         </div>
