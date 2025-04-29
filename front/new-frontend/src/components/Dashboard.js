@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaSignOutAlt, FaUpload, FaEdit, FaFileMedical, FaHospital, FaUserMd, FaPills, FaFlask, FaCalendarAlt } from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaUpload, FaEdit, FaFileMedical, FaHospital, FaUserMd, FaPills, FaFlask, FaCalendarAlt, FaSearch } from "react-icons/fa";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [records, setRecords] = useState([]);
+  const [filteredRecords, setFilteredRecords] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [showImages, setShowImages] = useState({});
+
   useEffect(() => {
     const storedUserId = localStorage.getItem("userID");
     const storedUserName = localStorage.getItem("userName");
@@ -28,19 +31,35 @@ const Dashboard = () => {
     fetchRecords(storedUserId);
   }, [navigate]);
 
+  useEffect(() => {
+    // Filter records whenever searchTerm or records change
+    const filtered = records.filter(record => 
+      record.hospitalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.diagnosis.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.medications.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.tests.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.nextAppointment && record.nextAppointment.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredRecords(filtered);
+  }, [searchTerm, records]);
+
   const fetchRecords = async (userId) => {
     try {
       setLoading(true);
       const res = await axios.get(`http://localhost:5000/hospital/records/${userId}`);
       if (Array.isArray(res.data.data)) {
         setRecords(res.data.data);
+        setFilteredRecords(res.data.data); // Initialize filtered records with all records
         console.log("Fetched records:", res.data.data);
       } else {
         setRecords([]);
+        setFilteredRecords([]);
       }
     } catch (error) {
       console.error("Error fetching records:", error);
       setRecords([]);
+      setFilteredRecords([]);
     } finally {
       setLoading(false);
     }
@@ -49,33 +68,31 @@ const Dashboard = () => {
   const toggleImage = (recordId) => {
     setShowImages((prev) => ({
       ...prev,
-      [recordId]: !prev[recordId],  // Toggle the visibility on each click
+      [recordId]: !prev[recordId],
     }));
-  // Reset image index to 0 when toggling the images
-  setCurrentImageIndex((prev) => ({
-    ...prev,
-    [recordId]: 0,
-  }));
-};
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [recordId]: 0,
+    }));
+  };
 
-const handleImageNavigation = (recordId, direction) => {
-  setCurrentImageIndex((prev) => {
-    const currentIndex = prev[recordId] || 0;
-    const imagesCount = records.find((record) => record._id === recordId)?.prescription.length || 0;
-    let newIndex = currentIndex + direction;
-    
-    // Ensure the index stays within bounds
-    if (newIndex < 0) newIndex = imagesCount - 1;
-    if (newIndex >= imagesCount) newIndex = 0;
+  const handleImageNavigation = (recordId, direction) => {
+    setCurrentImageIndex((prev) => {
+      const currentIndex = prev[recordId] || 0;
+      const imagesCount = records.find((record) => record._id === recordId)?.prescription.length || 0;
+      let newIndex = currentIndex + direction;
+      
+      if (newIndex < 0) newIndex = imagesCount - 1;
+      if (newIndex >= imagesCount) newIndex = 0;
 
-    return { ...prev, [recordId]: newIndex };
-  });
-};
+      return { ...prev, [recordId]: newIndex };
+    });
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("userID");
     localStorage.removeItem("userName");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleDelete = async (recordId, cloudinaryUrl) => {
@@ -122,6 +139,16 @@ const handleImageNavigation = (recordId, direction) => {
             <FaHospital className="heading-icon" />
             Hospital Records
           </h1>
+          <div className="search-container">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search records..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
           <button 
             className="upload-button" 
             onClick={() => navigate("/upload")}
@@ -136,15 +163,17 @@ const handleImageNavigation = (recordId, direction) => {
             <div className="spinner"></div>
             <p>Loading your records...</p>
           </div>
-        ) : records.length === 0 ? (
+        ) : filteredRecords.length === 0 ? (
           <div className="empty-state">
             <FaFileMedical className="empty-icon" />
-            <p className="no-records">No medical records found.</p>
-            <p>Upload your first record to get started!</p>
+            <p className="no-records">
+              {searchTerm ? "No matching records found." : "No medical records found."}
+            </p>
+            <p>{searchTerm ? "Try a different search term" : "Upload your first record to get started!"}</p>
           </div>
         ) : (
           <div className="records-container">
-            {records.map((record) => (
+            {filteredRecords.map((record) => (
               <div key={record._id} className="record-card">
                 <div className="card-header">
                   <h3>

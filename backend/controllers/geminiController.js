@@ -22,5 +22,4 @@ async function getBMISuggestions(bmi) {
         throw new Error("Failed to generate BMI suggestions");
     }
 }
-
 module.exports = { getBMISuggestions };
