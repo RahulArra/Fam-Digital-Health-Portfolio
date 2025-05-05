@@ -267,7 +267,7 @@ const Profile = () => {
             <FiUser className="user-icon" />
             <div>
               <h2>{user.name}'s Health Profile</h2>
-              <p className="member-since">Member since 2023</p>
+              <p className="member-since">Member since 2025</p>
             </div>
           </div>
           <button 
@@ -494,7 +494,6 @@ const Profile = () => {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Ask about your health..."
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
                 <button 
                   onClick={handleSendMessage} 

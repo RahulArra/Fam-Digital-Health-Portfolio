@@ -53,6 +53,7 @@ const Footer = () => {
           <div className="copyright">
             &copy; {currentYear} Digital Health Portfolio. All rights reserved.
           </div>
+
           
           <div className="social-links">
             <a href="#" aria-label="Twitter">
