@@ -25,4 +25,3 @@ The project allows users to track hospital visits, monitor BMI dynamically, and 
 
 ---
 
-## 📂 Project Structure
