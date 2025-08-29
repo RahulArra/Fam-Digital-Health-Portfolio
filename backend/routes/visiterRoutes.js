@@ -1,6 +1,6 @@
 // routes/visitorRoutes.js
 const express = require('express');
-const Visitor = require('../models/Visitors');
+const Visitor = require('../models/visitors');
 const router = express.Router();
 
 router.get('/count', async (req, res) => {
