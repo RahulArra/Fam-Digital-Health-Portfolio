@@ -10,7 +10,7 @@ function VerifyEmail() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/verify-email", { token });
+        const res = await axios.post("https://digital-health-portfolio-backend.onrender.com/api/auth/verify-email", { token });
         setMessage(res.data.msg);
       } catch (err) {
         setMessage(err.response?.data?.msg || "Verification failed.");

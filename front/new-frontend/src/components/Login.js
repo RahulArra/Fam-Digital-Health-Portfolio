@@ -19,7 +19,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', user);
+      const res = await axios.post('https://digital-health-portfolio-backend.onrender.com/api/auth/login', user);
       
       if (res.data.userID) {
         localStorage.setItem('userID', res.data.userID);

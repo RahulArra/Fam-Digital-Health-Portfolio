@@ -74,10 +74,10 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get(`http://localhost:5000/api/auth/${userId}`);
+        const { data: userData } = await axios.get(`https://digital-health-portfolio-backend.onrender.com/api/auth/${userId}`);
         setUser(userData);
 
-        const { data: profileData } = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+        const { data: profileData } = await axios.get(`https://digital-health-portfolio-backend.onrender.com/api/profile/${userId}`);
         setProfile(profileData);
         setHeight(profileData.height || "");
         setWeight(profileData.weight || "");
@@ -118,10 +118,10 @@ const Profile = () => {
 
     try {
       if (profile) {
-        await axios.post(`http://localhost:5000/api/profile/${userId}`, newProfile);
+        await axios.post(`https://digital-health-portfolio-backend.onrender.com/api/profile/${userId}`, newProfile);
         alert("Profile updated!");
       } else {
-        await axios.post("http://localhost:5000/api/profile", newProfile);
+        await axios.post("https://digital-health-portfolio-backend.onrender.com/api/profile", newProfile);
         alert("Profile added!");
       }
       window.location.reload();
@@ -156,7 +156,7 @@ const Profile = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/gemini/recommend", {
+      const response = await axios.post("https://digital-health-portfolio-backend.onrender.com/api/gemini/recommend", {
         height,
         weight,
         age,
@@ -190,7 +190,7 @@ const Profile = () => {
     setIsTyping(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/gemini/chat", {
+      const response = await axios.post("https://digital-health-portfolio-backend.onrender.com/api/gemini/chat", {
         message: inputMessage,
         context: {
           height,

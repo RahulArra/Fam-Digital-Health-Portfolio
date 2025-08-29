@@ -58,7 +58,7 @@ const MedicalRecordUpload = () => {
       
       formDataToSend.append('userId', localStorage.getItem('userID'));
       
-      await axios.post('http://localhost:5000/hospital/upload', formDataToSend, {
+      await axios.post('https://digital-health-portfolio-backend.onrender.com/hospital/upload', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

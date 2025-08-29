@@ -47,7 +47,7 @@ const Dashboard = () => {
   const fetchRecords = async (userId) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/hospital/records/${userId}`);
+      const res = await axios.get(`https://digital-health-portfolio-backend.onrender.com/hospital/records/${userId}`);
       if (Array.isArray(res.data.data)) {
         setRecords(res.data.data);
         setFilteredRecords(res.data.data); // Initialize filtered records with all records
@@ -99,7 +99,7 @@ const Dashboard = () => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
   
     try {
-      await axios.delete(`http://localhost:5000/hospital/${recordId}`, {
+      await axios.delete(`https://digital-health-portfolio-backend.onrender.com/hospital/${recordId}`, {
         data: { imageUrl: cloudinaryUrl }
       });
   

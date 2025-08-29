@@ -5,7 +5,7 @@ function VisitorCounter() {
   const [count, setCount] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/visitor/count')
+    axios.get('https://digital-health-portfolio-backend.onrender.com/api/visitor/count')
       .then(res => setCount(res.data.count))
       .catch(err => console.error('Visitor count error:', err));
   }, []);
