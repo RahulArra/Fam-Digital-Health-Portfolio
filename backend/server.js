@@ -21,7 +21,6 @@ mongoose.connect(MONGO_URI)
     console.error('Error connecting to MongoDB:', err);
     process.exit(1);
   });
-const cors = require("cors");
 app.use(cors({
   origin: "*", // or specify ["http://localhost:5173"]
   methods: ["GET", "POST", "PUT", "DELETE"],
