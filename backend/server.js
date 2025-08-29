@@ -21,7 +21,12 @@ mongoose.connect(MONGO_URI)
     console.error('Error connecting to MongoDB:', err);
     process.exit(1);
   });
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const cors = require("cors");
+app.use(cors({
+  origin: "*", // or specify ["http://localhost:5173"]
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 app.use("/api/profile", profileRoutes);
 const geminiRoutes = require('./routes/geminiRoutes');

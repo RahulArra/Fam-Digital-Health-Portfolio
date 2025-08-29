@@ -10,7 +10,7 @@ const sendVerificationMail = async (user) => {
   );
 
   // Use BASE_URL dynamically set in ngrok-fetch.js
-  const url = `http://localhost:5000/api/auth/verify/${token}`;
+  const url = `https://digital-health-portfolio-backend.onrender.com/api/auth/verify/${token}`;
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
