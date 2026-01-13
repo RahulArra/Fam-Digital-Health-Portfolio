@@ -88,17 +88,22 @@ router.post("/upload", upload.array("documents", 5), async (req, res) => {
 
     // Create new record
     const record = new HospitalRecord({
-      userId: req.body.userId,
-      hospitalName: req.body.hospitalName,
-      visitDate: req.body.visitDate,
-      doctorName: req.body.doctorName,
-      prescription: uploadResults.map(result => result.secure_url),
-      prescriptionPublicId: uploadResults.map(result => result.public_id),
-      diagnosis: req.body.diagnosis,
-      medications: req.body.medications,
-      tests: req.body.tests,
-      nextAppointment: req.body.nextAppointment,
-    });
+  userId: req.body.userId,
+  hospitalName: req.body.hospitalName,
+  visitDate: req.body.visitDate,
+  doctorName: req.body.doctorName,
+  prescription: uploadResults.map(result => result.secure_url),
+  prescriptionPublicId: uploadResults.map(result => result.public_id),
+  diagnosis: req.body.diagnosis,
+  medications: req.body.medications,
+  tests: req.body.tests,
+
+  followUpRequired: req.body.followUpRequired === true,
+  nextAppointment: req.body.followUpRequired ? req.body.nextAppointment : null,
+
+  followUpAlertSent: false
+});
+
 
     await record.save();
     
@@ -279,14 +284,17 @@ router.put("/update/:id", upload.array("documents", 5), async (req, res) => {
 
     // Update other fields with validation
     const updateFields = {
-      hospitalName: req.body.hospitalName,
-      doctorName: req.body.doctorName,
-      diagnosis: req.body.diagnosis,
-      medications: req.body.medications,
-      tests: req.body.tests,
-      nextAppointment: req.body.nextAppointment,
-      visitDate: req.body.visitDate
-    };
+  hospitalName: req.body.hospitalName,
+  doctorName: req.body.doctorName,
+  diagnosis: req.body.diagnosis,
+  medications: req.body.medications,
+  tests: req.body.tests,
+  visitDate: req.body.visitDate,
+
+  followUpRequired: req.body.followUpRequired === true,
+  nextAppointment: req.body.followUpRequired ? req.body.nextAppointment : null
+};
+
 
     // Validate and sanitize date fields if present
     if (updateFields.visitDate) {

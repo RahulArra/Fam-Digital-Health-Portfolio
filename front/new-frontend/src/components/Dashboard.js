@@ -47,7 +47,7 @@ const Dashboard = () => {
   const fetchRecords = async (userId) => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://digital-health-portfolio-backend.onrender.com/hospital/records/${userId}`);
+      const res = await axios.get(`http://localhost:5000/api/hospital/records/${userId}`);
       if (Array.isArray(res.data.data)) {
         setRecords(res.data.data);
         setFilteredRecords(res.data.data); // Initialize filtered records with all records

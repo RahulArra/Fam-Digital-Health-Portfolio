@@ -24,7 +24,19 @@ const userSchema = new mongoose.Schema({
   verified: {
     type: Boolean,
     default: false
-  }  
+  }  ,
+  notificationSettings: {
+  remindersEnabled: { type: Boolean, default: true },
+  followUpAlerts: { type: Boolean, default: true }
+},
+notificationPreferences: {
+  emailForHighPriority: {
+    type: Boolean,
+    default: true
+  }
+}
+
+
 });
 const User = mongoose.model('User', userSchema); // Mongoose maps to 'users' collection
 module.exports = User;

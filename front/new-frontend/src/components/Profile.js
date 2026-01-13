@@ -3,13 +3,16 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { 
-  FiEdit, FiActivity, FiHeart, FiPlus, FiTrash2, 
+import {
+  FiEdit, FiActivity, FiHeart, FiPlus, FiTrash2,
   FiArrowUpRight, FiUser, FiInfo, FiMessageSquare,
-  FiChevronDown, FiSend 
+  FiChevronDown, FiSend, FiBell
 } from "react-icons/fi";
 import './Profile.css';
 import ClipLoader from "react-spinners/ClipLoader";
+import NotificationBell from "./NotificationBell";
+import { fetchNotifications, markNotificationRead } from "../api/notificationApi";
+import ActionRequired from "../components/ActionRequired";
 
 const Profile = () => {
   // State declarations
@@ -38,6 +41,9 @@ const Profile = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  // Notifications State
+  const [notifications, setNotifications] = useState([]);
   
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
@@ -74,10 +80,10 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get(`https://digital-health-portfolio-backend.onrender.com/api/auth/${userId}`);
+        const { data: userData } = await axios.get(`http://localhost:5000/api/auth/${userId}`);
         setUser(userData);
 
-        const { data: profileData } = await axios.get(`https://digital-health-portfolio-backend.onrender.com/api/profile/${userId}`);
+        const { data: profileData } = await axios.get(`http://localhost:5000/api/profile/${userId}`);
         setProfile(profileData);
         setHeight(profileData.height || "");
         setWeight(profileData.weight || "");
@@ -93,6 +99,10 @@ const Profile = () => {
           waterIntake: "",
           sleepHours: ""
         });
+
+        // Fetch notifications
+        const { data: notificationsData } = await fetchNotifications();
+        setNotifications(notificationsData);
       } catch (error) {
         console.error("Error fetching data", error);
       }
@@ -118,10 +128,10 @@ const Profile = () => {
 
     try {
       if (profile) {
-        await axios.post(`https://digital-health-portfolio-backend.onrender.com/api/profile/${userId}`, newProfile);
+        await axios.post(`http://localhost:5000/api/profile/${userId}`, newProfile);
         alert("Profile updated!");
       } else {
-        await axios.post("https://digital-health-portfolio-backend.onrender.com/api/profile", newProfile);
+        await axios.post("http://localhost:5000/api/profile", newProfile);
         alert("Profile added!");
       }
       window.location.reload();
@@ -156,7 +166,7 @@ const Profile = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("https://digital-health-portfolio-backend.onrender.com/api/gemini/recommend", {
+      const response = await axios.post("http://localhost:5000/api/gemini/recommend", {
         height,
         weight,
         age,
@@ -190,7 +200,7 @@ const Profile = () => {
     setIsTyping(true);
 
     try {
-      const response = await axios.post("https://digital-health-portfolio-backend.onrender.com/api/gemini/chat", {
+      const response = await axios.post("http://localhost:5000/api/gemini/chat", {
         message: inputMessage,
         context: {
           height,
@@ -233,7 +243,24 @@ const Profile = () => {
     });
   };
 
+  // Notification functions
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await markNotificationRead(notificationId);
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification._id === notificationId
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
   return (
+    
     <div className="profile-container">
       {/* Navbar */}
       <nav className="navbar">
@@ -241,23 +268,27 @@ const Profile = () => {
           <FiHeart className="nav-icon" />
           <h1>HealthTrack</h1>
         </div>
-        <div className="nav-controls">
-          <button className="nav-btn" onClick={() => navigate("/dashboard")}>
-            <FiActivity className="btn-icon" />
-            Dashboard
-          </button>
-          <button 
-            className="nav-btn" 
-            onClick={() => { 
-              localStorage.removeItem("userID"); 
-              navigate("/login"); 
-            }}
-          >
-            <FiArrowUpRight className="btn-icon" />
-            Logout
-          </button>
-        </div>
+<div className="nav-controls">
+  <NotificationBell />
+
+  <button className="nav-btn" onClick={() => navigate("/dashboard")}>
+    <FiActivity className="btn-icon" />
+    Dashboard
+  </button>
+
+  <button className="nav-btn" onClick={() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userID");
+    navigate("/login");
+  }}>
+    <FiArrowUpRight className="btn-icon" />
+    Logout
+  </button>
+</div>
+
+
       </nav>
+    <ActionRequired />
 
       {/* Main Content */}
       <main className="profile-main">
@@ -406,6 +437,43 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Notifications Section */}
+        {/* <div className="detail-card">
+          <h3 className="detail-title">
+            <FiBell className="detail-icon" />
+            Notifications
+          </h3>
+          <div className="notifications-list">
+            {notifications.length === 0 ? (
+              <div className="empty-state">
+                <FiInfo className="info-icon" />
+                <p>No notifications available</p>
+              </div>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification._id}
+                  className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+                  onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}
+                >
+                  <div className="notification-header">
+                    <strong className="notification-title">{notification.title}</strong>
+                    {!notification.isRead && <span className="unread-indicator">●</span>}
+                  </div>
+                  <p className="notification-message">{notification.message}</p>
+                  <span className="notification-date">
+                    {new Date(notification.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div> */}
+        {/* <ActionRequired /> */}
+
+{/* existing dashboard content below */}
+
 
         {/* Loading Indicator */}
         {loading && (

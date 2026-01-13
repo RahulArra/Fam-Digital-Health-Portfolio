@@ -6,11 +6,14 @@ const HealthProfileSchema = new mongoose.Schema({
   weight: Number,
   // bmi: Number,
   bmiRecords: [
-    {
-      date: { type: Date, default: Date.now }, 
-      bmi: Number
-    }
-  ],
+  {
+    date: { type: Date, default: Date.now },
+    height: Number,
+    weight: Number,
+    bmi: Number,
+    category: String
+  }
+],
   
   age: Number,
   healthConditions: [String],  
@@ -22,7 +25,17 @@ const HealthProfileSchema = new mongoose.Schema({
     steps: Number,
     waterIntake: String,
     sleepHours: String,
-  }
+  },
+  updatedAt: {
+  type: Date,
+  default: Date.now
+},
+lastBmiAlert: {
+  prevBmi: Number,
+  lastBmi: Number
+}
+
+
 });
 
 module.exports = mongoose.model("HealthProfile", HealthProfileSchema);

@@ -17,7 +17,7 @@ const Navbar = () => {
           <a href="signup" className="btn btn-primary">Get Started</a>
           {/* Display the visitor count */}
           <div className="visitor-count">
-            <VisitorCounter />
+            {/* <VisitorCounter /> */}
           </div>
         </div>
       </div>

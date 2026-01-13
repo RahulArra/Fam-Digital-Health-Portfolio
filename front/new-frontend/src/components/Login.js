@@ -23,6 +23,7 @@ const Login = () => {
       
       if (res.data.userID) {
         localStorage.setItem('userID', res.data.userID);
+        localStorage.setItem("token",res.data.token);
         navigate('/Profile');
       } else {
         triggerError('Login successful, but userID not found.');
