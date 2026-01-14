@@ -51,6 +51,7 @@ module.exports = {
 };
 
 
+const FamilyMember = require("../models/FamilyMember");
 
 const preventDependentAction = async (req, res, next) => {
   const memberId = req.params.memberId;

@@ -2,11 +2,21 @@ const mongoose = require("mongoose");
 
 const HospitalRecordSchema = new mongoose.Schema(
   {
-    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "FamilyMember", required: true },
+    memberId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FamilyMember",
+      required: true
+    },
+
     hospitalName: String,
-    visitDate: Date,
     doctorName: String,
+    visitDate: {
+      type: Date,
+      required: true
+    },
+
     diagnosis: String,
+    notes: String,
 
     prescriptions: [
       {
@@ -19,13 +29,27 @@ const HospitalRecordSchema = new mongoose.Schema(
     followUp: {
       required: { type: Boolean, default: false },
       nextAppointment: Date,
-      alertSent: { type: Boolean, default: false }
+      followUpAlertSent: { type: Boolean, default: false }
     },
 
+    medicalReports: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MedicalReport"
+      }
+    ],
+
     createdBy: {
-      type: String,
-      enum: ["ADMIN", "GUARDIAN", "DOCTOR"],
-      required: true
+      role: {
+        type: String,
+        enum: ["ADMIN", "GUARDIAN", "DOCTOR"],
+        required: true
+      },
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      },
+      externalName: String
     }
   },
   { timestamps: true }
