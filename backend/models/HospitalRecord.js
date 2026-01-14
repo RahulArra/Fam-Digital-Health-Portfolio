@@ -1,35 +1,34 @@
 const mongoose = require("mongoose");
 
-const HospitalRecordSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+const HospitalRecordSchema = new mongoose.Schema(
+  {
+    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "FamilyMember", required: true },
+    hospitalName: String,
+    visitDate: Date,
+    doctorName: String,
+    diagnosis: String,
 
-  hospitalName: String,
-  doctorName: String,
+    prescriptions: [
+      {
+        medicine: String,
+        dosage: String,
+        duration: String
+      }
+    ],
 
-  visitDate: { type: Date, required: true },
+    followUp: {
+      required: { type: Boolean, default: false },
+      nextAppointment: Date,
+      alertSent: { type: Boolean, default: false }
+    },
 
-  diagnosis: String,
-  medications: String,
-  tests: String,
-
-  prescription: [String],
-  prescriptionPublicId: [String],
-
-  nextAppointment: Date,
-
-  followUpRequired: {
-    type: Boolean,
-    default: false
+    createdBy: {
+      type: String,
+      enum: ["ADMIN", "GUARDIAN", "DOCTOR"],
+      required: true
+    }
   },
-
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  followUpAlertSent: {
-  type: Boolean,
-  default: false
-}
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("HospitalRecord", HospitalRecordSchema);

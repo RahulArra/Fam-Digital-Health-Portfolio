@@ -1,41 +1,26 @@
 const mongoose = require("mongoose");
 
-const HealthProfileSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  height: Number,
-  weight: Number,
-  // bmi: Number,
-  bmiRecords: [
+const HealthProfileSchema = new mongoose.Schema(
   {
-    date: { type: Date, default: Date.now },
-    height: Number,
-    weight: Number,
-    bmi: Number,
-    category: String
-  }
-],
-  
-  age: Number,
-  healthConditions: [String],  
-  medications: [String],       
-  therapies: [String],         
-  badHabits: [String],  
-  dailyActivity: {
-    exercise: String,
-    steps: Number,
-    waterIntake: String,
-    sleepHours: String,
+    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "FamilyMember", required: true, unique: true },
+
+    physicalProfile: {
+      height: Number,
+      weight: Number,
+      bloodGroup: String
+    },
+
+    lifestyleProfile: {
+      smoking: Boolean,
+      alcohol: Boolean,
+      activityLevel: String,
+      sleepPattern: String
+    },
+
+    chronicConditions: [String],
+    longTermMedications: [String]
   },
-  updatedAt: {
-  type: Date,
-  default: Date.now
-},
-lastBmiAlert: {
-  prevBmi: Number,
-  lastBmi: Number
-}
-
-
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("HealthProfile", HealthProfileSchema);

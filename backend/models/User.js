@@ -1,42 +1,13 @@
-const mongoose = require('mongoose');
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    default: 'user',
-  },
-  Phone:{
-    type : Number,
-    required : true ,
-  },
-  verified: {
-    type: Boolean,
-    default: false
-  }  ,
-  notificationSettings: {
-  remindersEnabled: { type: Boolean, default: true },
-  followUpAlerts: { type: Boolean, default: true }
-},
-notificationPreferences: {
-  emailForHighPriority: {
-    type: Boolean,
-    default: true
-  }
-}
+const mongoose = require("mongoose");
 
+const UserSchema = new mongoose.Schema(
+  {
+    email: { type: String, required: true, unique: true },
+    password: { type: String },
+    isEmailVerified: { type: Boolean, default: false },
+    lastLoginAt: { type: Date }
+  },
+  { timestamps: true }
+);
 
-});
-const User = mongoose.model('User', userSchema); // Mongoose maps to 'users' collection
-module.exports = User;
+module.exports = mongoose.model("User", UserSchema);
