@@ -2,6 +2,7 @@ require("dotenv").config(); // ✅ ADD THIS LINE
 
 const mongoose = require("mongoose");
 const app = require("./app");
+require("./cron");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;

@@ -9,6 +9,7 @@ app.use("/families", require("./routes/family.routes"));
 app.use("/", require("./routes/familyMember.routes"));
 app.use("/", require("./routes/healthProfile.routes"));
 app.use("/", require("./routes/hospitalRecord.routes"));
+app.use("/", require("./routes/medicalReport.routes"));
 
 
 app.use((err, req, res, next) => {

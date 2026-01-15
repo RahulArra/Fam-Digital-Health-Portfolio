@@ -2,20 +2,49 @@ const mongoose = require("mongoose");
 
 const MedicalReportSchema = new mongoose.Schema(
   {
-    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "FamilyMember", required: true },
-    hospitalRecordId: { type: mongoose.Schema.Types.ObjectId, ref: "HospitalRecord" },
+    familyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Family",
+      required: true
+    },
 
-    reportType: String,
-    fileUrl: String,
-    filePublicId: String,
+    memberId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FamilyMember",
+      required: true
+    },
 
-    extractedFindings: { type: Map, of: String },
-    extractionConfidence: Number,
-    extractedAt: Date,
+    hospitalRecordId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "HospitalRecord"
+    },
 
-    extractionSource: {
+    reportType: {
       type: String,
-      enum: ["AI", "manual"]
+      required: true
+      // examples: "BLOOD_TEST", "XRAY", "PRESCRIPTION", "SCAN"
+    },
+
+    file: {
+      url: String,
+      publicId: String,
+      mimeType: String
+    },
+
+    extractedMetrics: [
+      {
+        metricType: String,
+        value: Number,
+        unit: String,
+        referenceRange: String,
+        confidence: Number
+      }
+    ],
+
+    extractedBy: {
+      type: String,
+      enum: ["MANUAL", "AI"],
+      default: "MANUAL"
     }
   },
   { timestamps: true }
