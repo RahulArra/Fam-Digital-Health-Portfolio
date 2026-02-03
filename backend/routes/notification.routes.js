@@ -18,5 +18,10 @@ router.patch(
   familyContextMiddleware,
   notificationController.markAsRead
 );
+router.patch(
+  "/:id/acknowledge",
+  authMiddleware,
+  notificationController.acknowledgeNotification
+);
 
 module.exports = router;

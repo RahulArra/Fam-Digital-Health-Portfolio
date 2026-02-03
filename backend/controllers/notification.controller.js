@@ -35,7 +35,31 @@ const markAsRead = async (req, res, next) => {
   }
 };
 
+const acknowledgeNotification = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const notification = await Notification.findById(id);
+    if (!notification) {
+      return next(new ApiError(404, "Notification not found"));
+    }
+
+    if (notification.acknowledgedAt) {
+      return next(new ApiError(400, "Already acknowledged"));
+    }
+
+    notification.acknowledgedAt = new Date();
+    notification.isRead = true;
+
+    await notification.save();
+
+    res.json({ message: "Notification acknowledged" });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   getNotifications,
-  markAsRead
+  markAsRead,
+  acknowledgeNotification
 };

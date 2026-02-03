@@ -2,24 +2,35 @@ const express = require("express");
 const authMiddleware = require("../middleware/auth.middleware");
 const familyContextMiddleware = require("../middleware/familyContext.middleware");
 const { requireAdmin } = require("../middleware/role.middleware");
-const familyMemberController = require("../controllers/familyMember.controller");
+
+const {
+  inviteUser,
+  acceptInvite,
+  cancelInvite
+} = require("../controllers/familyInvite.controller");
 
 const router = express.Router();
 
+// Admin invites user by email
 router.post(
-  "/families/:familyId/members",
+  "/:familyId/invite",
   authMiddleware,
-  
   familyContextMiddleware,
   requireAdmin,
-  familyMemberController.createFamilyMember
+  inviteUser
 );
 
-router.get(
-  "/families/:familyId/members",
+// Invited user accepts invite
+router.post(
+  "/invite/accept",
   authMiddleware,
-  familyContextMiddleware,
-  familyMemberController.getFamilyMembers
+  acceptInvite
 );
+router.patch(
+  "/invite/:inviteId/cancel",
+  authMiddleware,
+  cancelInvite
+);
+
 
 module.exports = router;

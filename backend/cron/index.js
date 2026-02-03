@@ -1,4 +1,11 @@
-const cron = require("node-cron");
 const { runFollowUpCheck } = require("./followUp.cron");
+const { runBmiAlertCheck } = require("./bmiAlert.cron");
+const { runInactivityCheck } = require("./inactivityReminder.cron");
 
-cron.schedule("0 9 * * *", runFollowUpCheck);
+const runAllNotificationCrons = async () => {
+  await runFollowUpCheck();
+  await runBmiAlertCheck();
+  await runInactivityCheck();
+};
+
+module.exports = { runAllNotificationCrons };

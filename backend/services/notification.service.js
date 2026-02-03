@@ -1,4 +1,5 @@
 const Notification = require("../models/Notification");
+const { sendEmail } = require("./email.service");
 
 const createNotification = async ({
   familyId,
@@ -9,7 +10,7 @@ const createNotification = async ({
   priority = "LOW",
   metadata = {}
 }) => {
-  return Notification.create({
+   const notification = await Notification.create({
     familyId,
     memberId,
     type,
@@ -18,6 +19,16 @@ const createNotification = async ({
     priority,
     metadata
   });
+
+  if (priority === "HIGH" && metadata.email) {
+    await sendEmail({
+      to: metadata.email,
+      subject: title,
+      html: `<p>${message}</p>`
+    });
+  }
+
+  return notification;
 };
 
 module.exports = { createNotification };

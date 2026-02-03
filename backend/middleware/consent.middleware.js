@@ -1,20 +1,13 @@
 const Consent = require("../models/Consent");
 const ApiError = require("../utils/ApiError");
 
-const requireConsent = (scope) => {
+const requireConsent = ({ grantedTo, scope }) => {
   return async (req, res, next) => {
-    if (req.role === "ADMIN") {
-      return next();
-    }
-
-    const memberId = req.params.memberId;
-    if (!memberId) {
-      return next(new ApiError(400, "Member context required"));
-    }
-
     const consent = await Consent.findOne({
-      memberId,
-      scope,
+      familyId: req.family._id,
+      memberId: req.params.memberId,
+      grantedTo,
+      scopes: scope,
       revokedAt: { $exists: false },
       $or: [
         { expiresAt: { $exists: false } },
@@ -31,6 +24,7 @@ const requireConsent = (scope) => {
 };
 
 module.exports = { requireConsent };
+
 
 
 

@@ -7,6 +7,11 @@ const FamilySchema = new mongoose.Schema(
       type: String,
       enum: ["active", "inactive", "archived"],
       default: "active"
+    },
+    joinCode: {
+      type: String,
+      unique: true,
+      required: true
     }
   },
   { timestamps: true }

@@ -12,6 +12,7 @@ const router = express.Router();
 router.post(
   "/members/:memberId/hospital-records",
   authMiddleware,
+  
   familyContextMiddleware,
   requireGuardianOrSelf,
   preventDependentAction,
@@ -21,9 +22,15 @@ router.post(
 router.get(
   "/members/:memberId/hospital-records",
   authMiddleware,
+
   familyContextMiddleware,
   requireGuardianOrSelf,
   hospitalRecordController.getRecords
+);
+router.patch(
+  "/hospital-records/:recordId",
+  authMiddleware,
+  hospitalRecordController.updateHospitalRecord
 );
 
 module.exports = router;

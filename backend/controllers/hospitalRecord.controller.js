@@ -42,7 +42,25 @@ const getRecords = async (req, res, next) => {
   }
 };
 
+const updateHospitalRecord = async (req, res, next) => {
+  try {
+    const { recordId } = req.params;
+
+    const record = await HospitalRecord.findById(recordId);
+    if (!record) {
+      return next(new ApiError(404, "Hospital record not found"));
+    }
+
+    Object.assign(record, req.body);
+    await record.save();
+
+    res.json({ message: "Hospital record updated", record });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   createRecord,
-  getRecords
+  getRecords,
+  updateHospitalRecord
 };

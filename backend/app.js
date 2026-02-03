@@ -6,11 +6,14 @@ app.use(express.json());
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/test", require("./routes/test.routes"));
 app.use("/families", require("./routes/family.routes"));
+app.use("/families", require("./routes/familyInvite.routes"));
+
 app.use("/", require("./routes/familyMember.routes"));
 app.use("/", require("./routes/healthProfile.routes"));
 app.use("/", require("./routes/hospitalRecord.routes"));
 app.use("/", require("./routes/medicalReport.routes"));
-
+app.use("/", require("./routes/consent.routes"));
+app.use("/", require("./routes/notification.routes"));
 
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json({

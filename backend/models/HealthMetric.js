@@ -16,5 +16,6 @@ const HealthMetricSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+HealthMetricSchema.index({ memberId: 1, metricType: 1, recordedAt: -1 });
 
 module.exports = mongoose.model("HealthMetric", HealthMetricSchema);
