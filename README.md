@@ -21,7 +21,8 @@ The project allows users to track hospital visits, monitor BMI dynamically, and 
 - **Backend:** Node.js, Express.js, JWT Authentication  
 - **Database:** MongoDB Atlas  
 - **Image Hosting:** Cloudinary  
-- **AI Integration:** Gemini AI for recommendations  
+- **AI Integration:** Gemini AI for recommendations
+- ** RAG INTEGRATION : ** FOR PERSONALIZED HEALTH RECOMMENDATION**
 
 ---
 
