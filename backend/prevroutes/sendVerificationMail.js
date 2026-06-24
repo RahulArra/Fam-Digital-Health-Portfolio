@@ -8,7 +8,7 @@ const sendVerificationMail = async (user) => {
     { expiresIn: "1h" }
   );
 
-  const url = `https://digital-health-portfolio-backend.onrender.com/api/auth/verify/${token}`;
+  const url = `${process.env.REACT_APP_API_BASE}/api/auth/verify/${token}`;
 
   await sendEmail({
     to: user.email,

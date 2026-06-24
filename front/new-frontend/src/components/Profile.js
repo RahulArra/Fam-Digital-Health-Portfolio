@@ -6,15 +6,15 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   FiEdit, FiActivity, FiHeart, FiPlus, FiTrash2,
   FiArrowUpRight, FiUser, FiInfo, FiMessageSquare,
-  FiChevronDown, FiSend, FiBell
+  FiChevronDown, FiSend
 } from "react-icons/fi";
 import './Profile.css';
 import ClipLoader from "react-spinners/ClipLoader";
 import NotificationBell from "./NotificationBell";
-import { fetchNotifications, markNotificationRead } from "../api/notificationApi";
 import ActionRequired from "../components/ActionRequired";
 
 const Profile = () => {
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
   // State declarations
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
@@ -37,14 +37,13 @@ const Profile = () => {
   
   // AI Features State
   const [recommendation, setRecommendation] = useState("");
+  const [grounding, setGrounding] = useState(null);
+  const [groundingLabel, setGroundingLabel] = useState("Patient context index");
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // Notifications State
-  const [notifications, setNotifications] = useState([]);
-  
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
   const userId = localStorage.getItem("userID");
@@ -80,10 +79,10 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get(`http://localhost:5000/api/auth/${userId}`);
+        const { data: userData } = await axios.get(`${API_BASE}/auth/${userId}`);
         setUser(userData);
 
-        const { data: profileData } = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+        const { data: profileData } = await axios.get(`${API_BASE}/profile/${userId}`);
         setProfile(profileData);
         setHeight(profileData.height || "");
         setWeight(profileData.weight || "");
@@ -99,17 +98,24 @@ const Profile = () => {
           waterIntake: "",
           sleepHours: ""
         });
-
-        // Fetch notifications
-        const { data: notificationsData } = await fetchNotifications();
-        setNotifications(notificationsData);
+        try {
+          const { data: groundingData } = await axios.get(`${API_BASE}/gemini/grounding/${userId}`, {
+            params: {
+              query: "Summarize the patient's current health priorities."
+            }
+          });
+          setGrounding(groundingData.grounding);
+          setGroundingLabel("Patient context index");
+        } catch (groundingError) {
+          console.error("Error fetching grounding preview", groundingError);
+        }
       } catch (error) {
         console.error("Error fetching data", error);
       }
     };
 
     fetchData();
-  }, [userId]);
+  }, [API_BASE, userId]);
 
   // Profile functions
   const handleSaveProfile = async (e) => {
@@ -128,10 +134,10 @@ const Profile = () => {
 
     try {
       if (profile) {
-        await axios.post(`http://localhost:5000/api/profile/${userId}`, newProfile);
+        await axios.post(`${API_BASE}/profile/${userId}`, newProfile);
         alert("Profile updated!");
       } else {
-        await axios.post("http://localhost:5000/api/profile", newProfile);
+        await axios.post(`${API_BASE}/profile`, newProfile);
         alert("Profile added!");
       }
       window.location.reload();
@@ -143,21 +149,27 @@ const Profile = () => {
   const calculateBMI = () => {
     if (!height || !weight) return null;
     const heightInMeters = height / 100;
-    const bmiValue = (weight / (heightInMeters * heightInMeters)).toFixed(2);
-    
-    if (!bmiRecords.some(record => record.bmi === parseFloat(bmiValue))) {
-      setBmiRecords([...bmiRecords, {
-        date: new Date(),
-        bmi: parseFloat(bmiValue)
-      }]);
-    }
-    
-    return bmiValue;
+    return (weight / (heightInMeters * heightInMeters)).toFixed(2);
+  };
+
+  const currentBmi = calculateBMI();
+
+  const formatSourceType = (sourceType) => {
+    const labels = {
+      profile: "Profile",
+      activity: "Lifestyle",
+      bmi: "BMI Trend",
+      hospital_record: "Hospital Visit",
+      care_plan: "Treatment Plan",
+      request: "Live Context"
+    };
+
+    return labels[sourceType] || "Patient Signal";
   };
 
   // AI Recommendation function
   const handleGetRecommendation = async () => {
-    const bmiValue = calculateBMI();
+    const bmiValue = currentBmi;
 
     if (!bmiValue) {
       alert("Height and weight are required to calculate BMI.");
@@ -166,7 +178,8 @@ const Profile = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/gemini/recommend", {
+      const response = await axios.post(`${API_BASE}/gemini/recommend`, {
+        userId,
         height,
         weight,
         age,
@@ -174,9 +187,13 @@ const Profile = () => {
         medications,
         therapies,
         dailyActivity,
-        badHabits
+        badHabits,
+        query:
+          "Generate a personalized health plan with diet, exercise, medication reminders, and follow-up insights."
       });
       setRecommendation(marked(response.data.recommendation));
+      setGrounding(response.data.grounding);
+      setGroundingLabel("Recommendation grounding");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching AI recommendation:", error);
@@ -200,8 +217,9 @@ const Profile = () => {
     setIsTyping(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/gemini/chat", {
+      const response = await axios.post(`${API_BASE}/gemini/chat`, {
         message: inputMessage,
+        userId,
         context: {
           height,
           weight,
@@ -219,10 +237,13 @@ const Profile = () => {
         id: Date.now() + 1,
         text: marked(response.data.reply),
         sender: 'ai',
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString(),
+        grounding: response.data.grounding
       };
 
       setMessages(prev => [...prev, aiMessage]);
+      setGrounding(response.data.grounding);
+      setGroundingLabel("Latest assistant grounding");
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages(prev => [...prev, {
@@ -241,22 +262,6 @@ const Profile = () => {
       ...dailyActivity,
       [field]: value
     });
-  };
-
-  // Notification functions
-  const handleMarkAsRead = async (notificationId) => {
-    try {
-      await markNotificationRead(notificationId);
-      setNotifications(prev =>
-        prev.map(notification =>
-          notification._id === notificationId
-            ? { ...notification, isRead: true }
-            : notification
-        )
-      );
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
   };
 
   return (
@@ -334,13 +339,13 @@ const Profile = () => {
               <div className="metric-item">
                 <span className="metric-label">BMI</span>
                 <div className="bmi-display">
-                  <span className="metric-value">{calculateBMI() || '--'}</span>
-                  {calculateBMI() && (
+                  <span className="metric-value">{currentBmi || '--'}</span>
+                  {currentBmi && (
                     <span 
                       className="bmi-status"
-                      style={{ backgroundColor: healthStatusColors[getBMIStatus(calculateBMI())] }}
+                      style={{ backgroundColor: healthStatusColors[getBMIStatus(currentBmi)] }}
                     >
-                      {getBMIStatus(calculateBMI())}
+                      {getBMIStatus(currentBmi)}
                     </span>
                   )}
                 </div>
@@ -474,6 +479,61 @@ const Profile = () => {
 
 {/* existing dashboard content below */}
 
+        {grounding?.summary && (
+          <div className="grounding-card">
+            <div className="grounding-header">
+              <div>
+                <p className="grounding-eyebrow">RAG Retrieval Layer</p>
+                <h3>{groundingLabel}</h3>
+              </div>
+              <span className="grounding-badge">
+                {grounding.summary.chunksRetrieved} snippets retrieved
+              </span>
+            </div>
+
+            <div className="grounding-stats">
+              <div className="grounding-stat">
+                <span>Conditions indexed</span>
+                <strong>{grounding.summary.conditionsIndexed}</strong>
+              </div>
+              <div className="grounding-stat">
+                <span>Medications indexed</span>
+                <strong>{grounding.summary.medicationsIndexed}</strong>
+              </div>
+              <div className="grounding-stat">
+                <span>Hospital records indexed</span>
+                <strong>{grounding.summary.recordsIndexed}</strong>
+              </div>
+              <div className="grounding-stat">
+                <span>Latest BMI</span>
+                <strong>{grounding.summary.latestBmi || "--"}</strong>
+              </div>
+            </div>
+
+            <div className="grounding-sources">
+              {grounding.sources?.map((source) => (
+                <div key={source.id} className="grounding-source">
+                  <div className="grounding-source-top">
+                    <span className="grounding-source-type">{formatSourceType(source.sourceType)}</span>
+                    <span className="grounding-source-score">Score {source.score}</span>
+                  </div>
+                  <h4>{source.title}</h4>
+                  <p>{source.snippet}</p>
+                  {source.matchedTerms?.length > 0 && (
+                    <div className="grounding-terms">
+                      {source.matchedTerms.map((term) => (
+                        <span key={`${source.id}-${term}`} className="grounding-term">
+                          {term}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         {/* Loading Indicator */}
         {loading && (
@@ -536,6 +596,11 @@ const Profile = () => {
                           <div dangerouslySetInnerHTML={{ __html: message.text }} />
                         ) : (
                           <p>{message.text}</p>
+                        )}
+                        {message.sender === 'ai' && message.grounding?.summary && (
+                          <div className="message-grounding">
+                            Grounded on {message.grounding.summary.chunksRetrieved} patient snippets
+                          </div>
                         )}
                         <span className="message-time">{message.timestamp}</span>
                       </div>
@@ -731,3 +796,4 @@ const Profile = () => {
 };
 
 export default Profile;
+      

@@ -372,6 +372,128 @@ body {
   color: #64748b;
   font-style: italic;
 }
+
+.grounding-card {
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  border: 1px solid #c7d2fe;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.grounding-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.grounding-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4f46e5;
+  margin-bottom: 0.35rem;
+}
+
+.grounding-badge {
+  background: #312e81;
+  color: #eef2ff;
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.grounding-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.grounding-stat {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.grounding-stat span {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.grounding-stat strong {
+  font-size: 1.1rem;
+  color: #1e1b4b;
+}
+
+.grounding-sources {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.grounding-source {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+}
+
+.grounding-source h4 {
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.grounding-source p {
+  color: #475569;
+  line-height: 1.55;
+}
+
+.grounding-source-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.grounding-source-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.grounding-source-score {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.grounding-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.grounding-term {
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.78rem;
+}
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -506,6 +628,14 @@ input:focus, select:focus {
     gap: 1rem;
   }
 
+  .grounding-header {
+    flex-direction: column;
+  }
+
+  .grounding-badge {
+    white-space: normal;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
   }
@@ -626,6 +756,13 @@ input:focus, select:focus {
 .ai .message-time {
   text-align: left;
   color: #64748b;
+}
+
+.message-grounding {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: #4f46e5;
+  font-weight: 600;
 }
 
 .ai-chat-input {

@@ -36,7 +36,7 @@ const EditRecord = () => {
   const fetchRecord = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`https://digital-health-portfolio-backend.onrender.com/hospital/records/id/${id}`);
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE}/hospital/records/id/${id}`);
       
       if (res.data && res.data.data) {
         const record = res.data.data;
@@ -83,7 +83,7 @@ const EditRecord = () => {
 
   const removeExistingImage = async (imageUrl, publicId) => {
     try {
-      await axios.delete(`https://digital-health-portfolio-backend.onrender.com/hospital/remove-image`, {
+      await axios.delete(`${process.env.REACT_APP_API_BASE}/hospital/remove-image`, {
         data: { recordId: id, imageUrl, publicId }
       });
       setExistingImages(prev => prev.filter(img => img !== imageUrl));
@@ -125,7 +125,7 @@ const EditRecord = () => {
         formDataToSend.append('documents', image.file); // Changed field name here
       });
       
-      await axios.put(`https://digital-health-portfolio-backend.onrender.com/hospital/update/${id}`, formDataToSend, {
+      await axios.put(`${process.env.REACT_APP_API_BASE}/hospital/update/${id}`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

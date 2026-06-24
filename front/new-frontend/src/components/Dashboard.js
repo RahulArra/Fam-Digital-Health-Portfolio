@@ -99,7 +99,7 @@ const Dashboard = () => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
   
     try {
-      await axios.delete(`https://digital-health-portfolio-backend.onrender.com/hospital/${recordId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_BASE}/hospital/${recordId}`, {
         data: { imageUrl: cloudinaryUrl }
       });
   
